@@ -38,3 +38,8 @@ tokio-stream = "0.1.17"
 tokio-util = "0.7.13"
 tracing = "0.1.41"
 tracing-actix-web = "0.7.15"
+diesel = { version = "2.2.0" }
+
+# add custom libraries
+ccny-course-catalog = "0.1.1"
+rate_my_professor_api_rs = "0.1.5"
