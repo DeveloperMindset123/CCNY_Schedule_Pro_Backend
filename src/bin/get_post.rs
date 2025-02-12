@@ -8,8 +8,6 @@ use std::env::args;
 // we can use the "match" method to determine what might happen as a result
 fn main() {
     use self::schema::posts::dsl::posts;
-
-    // post id not found
     let post_id = args()
         .nth(1)
         .expect("get_post requires a post id")
