@@ -1,5 +1,6 @@
 // example file to test and ensure database connection sample works
-
+// displays upto 5 of the posts (most recent)
+// within the current database
 use self::models::*;
 use diesel::prelude::*;
 // use diesel_demo::*;      // originally (name of project)

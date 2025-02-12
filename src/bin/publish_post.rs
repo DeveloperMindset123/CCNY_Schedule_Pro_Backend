@@ -14,8 +14,11 @@ fn main() {
         .expect("publish_post requires a post id")
         .parse::<i32>()
         .expect("Invalid ID");
+
+    println!("post id : {id:?}");
     let connection = &mut establish_connection();
 
+    // hardcoded post id since id is not being retrieved from database
     let post = diesel::update(posts.find(id))
         .set(published.eq(true))
         .returning(Post::as_returning())
