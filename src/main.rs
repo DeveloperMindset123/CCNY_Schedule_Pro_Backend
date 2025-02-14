@@ -1,3 +1,5 @@
+// TODO : implement Actix API endpoints to retrieve JSON data as input
+// TODO : determine a function that can convert given JSOn data into appropriate data container to push into diesel table.
 // #![deny(warnings)]
 mod routes;
 use actix_files::NamedFile;
@@ -10,7 +12,8 @@ use awc::{Client, ws};
 use futures_util::{SinkExt as _, StreamExt as _};
 use log::{debug, error, info};
 
-#[tokio::main(flavor="current_thread")]     // configures the tokio runtime to use the single-threaded current-thread runtime
+// #[tokio::main(flavor="current_thread")]
+#[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
     info!("Starting http server at http://localhost:5000");
@@ -31,14 +34,16 @@ async fn main() -> std::io::Result<()> {
             // .service(web::resource("/ws-basic").route(web::get().to(echo_ws)))
             // .service(web::resource("/ws-broadcast").route(web::get().to(broadcast_ws)))
             // .service(web::resource("/send").route(web::post().to(send_to_broadcast_ws)))
-            
+            .app_data(web::JsonConfig::default().limit(4096))       // limit the size of payload via global configuration
+            .wrap(Logger::default())
             .service(custom_routes::RootRoute)
             .service(custom_routes::echo)
             .service(custom_routes::TestGet)
-            .wrap(Logger::default())
             .route("/manualRoute", web::get().to(custom_routes::manual_hello))
+            .route("/test_json", web::post().to(custom_routes::enter_username_info))
+            // .service(web::resource("/json").route(web::post().to(custom_routes::enter_username_info)))
     })
-    .bind(("127.0.0.1", 5000))?
+    .bind(("127.0.0.1", 8080))?     // self-reference the current device itself
     .run()
     .await
 }

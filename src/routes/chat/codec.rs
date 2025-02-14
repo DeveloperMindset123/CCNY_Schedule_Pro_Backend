@@ -1,46 +1,53 @@
 #![allow(dead_code)]
 use std::io;
-
 use actix::prelude::*;
+
+// Decoder and Encoder are both traits
+// this to encrypt and decrypt messages within websocket stream
 use actix_codec::{Decoder, Encoder};
 use actix_web::web::{BufMut, BytesMut};
+
+// BigEndian : A big-endian system stores the most significant byte of a word in the smallest possible memory address
+//
+// Big Endian (ctd.) : stores the least signficant byte in the largest possible memory address.
+// ByteOrder : trait that describes types that can serialize integers as bytes.
 use byteorder::{BigEndian, ByteOrder};
 use serde::{Deserialize, Serialize};
-use serde_json as json;
+use serde_json as json; 
 
-/// Client request
+// Client request
 #[derive(Serialize, Deserialize, Debug, Message)]
 #[rtype(result = "()")]
 #[serde(tag = "cmd", content = "data")]
 pub enum ChatRequest {
-    /// List rooms
+    // List rooms
     List,
-    /// Join rooms
+    // Join rooms
     Join(String),
-    /// Send message
+    // Send message
     Message(String),
-    /// Ping
+    // Ping
     Ping,
 }
 
-/// Server response
+// Server response
 #[derive(Serialize, Deserialize, Debug, Message)]
 #[rtype(result = "()")]
 #[serde(tag = "cmd", content = "data")]
 pub enum ChatResponse {
     Ping,
 
-    /// List of rooms
+    // List of rooms
     Rooms(Vec<String>),
 
-    /// Joined
+    // Joined
     Joined(String),
 
-    /// Message
+    // Message
     Message(String),
 }
 
-/// Codec for Client -> Server transport
+// Codec for Client -> Server transport
 pub struct ChatCodec;
 
 impl Decoder for ChatCodec {
@@ -80,9 +87,11 @@ impl Encoder<ChatResponse> for ChatCodec {
     }
 }
 
-/// Codec for Server -> Client transport
+// Codec for Server -> Client transport
+// struct with no predefined field based values
 pub struct ClientChatCodec;
 
+// implements decode trait for ClientChatCodec
 impl Decoder for ClientChatCodec {
     type Item = ChatResponse;
     type Error = io::Error;
