@@ -39,11 +39,12 @@ async fn main() -> std::io::Result<()> {
             .service(custom_routes::RootRoute)
             .service(custom_routes::echo)
             .service(custom_routes::TestGet)
+            .service(custom_routes::index_manual)
             .route("/manualRoute", web::get().to(custom_routes::manual_hello))
             .route("/test_json", web::post().to(custom_routes::enter_username_info))
             // .service(web::resource("/json").route(web::post().to(custom_routes::enter_username_info)))
     })
-    .bind(("127.0.0.1", 8080))?     // self-reference the current device itself
+    .bind(("127.0.0.1", 5000))?     // self-reference the current device itself
     .run()
     .await
 }

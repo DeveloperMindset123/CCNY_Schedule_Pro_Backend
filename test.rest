@@ -1,6 +1,6 @@
-POST http://localhost:5000/test_json
+POST http://localhost:5000/index
 Content-Type: "application/json"
 
 {
-    "username" : "dasa60196"
-}
+    "name": "Test user", 
+    "number": 100}

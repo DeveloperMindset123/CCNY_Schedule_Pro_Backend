@@ -1,6 +1,6 @@
 // Implements all the relevant endpoints here.
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result, HttpRequest};
-// use futures::StreamExt;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
+use futures_util::StreamExt;        // originally futures::StreamExt;
 use serde::{Serialize, Deserialize};
 
 #[get("/")]
@@ -30,7 +30,7 @@ pub async fn echo(req_body : String) -> impl Responder {
 //     Ok(format!("Welcome {}!", info.username))
 // }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MyObj {
     name: String,
     number: i32,
@@ -49,6 +49,32 @@ async fn extract_item(item: web::Json<MyObj>, req: HttpRequest) -> HttpResponse 
 
     HttpResponse::Ok().json(item.0) // <- send json response
 }
+
+// define global function
+pub const MAX_SIZE : usize = 262_144;
+
+// example to retrieve general JSON payload data
+#[post("/index")]
+pub async fn index_manual(mut payload: web::Payload) -> Result<HttpResponse, Error> {
+    
+    let mut body = web::BytesMut::new();
+    while let Some(chunk) = payload.next().await {
+        let chunk = chunk?;
+        
+        if (body.len() + chunk.len()) > MAX_SIZE {
+            return Err(actix_web::error::ErrorBadRequest("overflow"));
+        }
+        body.extend_from_slice(&chunk);
+    }
+
+    
+    let obj = serde_json::from_slice::<MyObj>(&body)?;      // extract struct from json
+
+    // tested to check if payload accepts data successfully
+    println!("{:?}", obj.clone());
+    Ok(HttpResponse::Ok().json(obj)) 
+}
+
 
 pub async fn manual_hello() -> impl Responder {
     HttpResponse::Ok().body("This is a manual hello!")

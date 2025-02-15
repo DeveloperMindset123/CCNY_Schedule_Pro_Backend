@@ -11,7 +11,7 @@ import aiohttp
 async def req():
     resp = await aiohttp.ClientSession().request(
         "post",
-        "http://localhost:5000/json",
+        "http://localhost:5000/index",
         data=json.dumps({"name": "Test user", "number": 100}),
         headers={"content-type": "application/json"},
     )
