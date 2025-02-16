@@ -40,6 +40,7 @@ async fn main() -> std::io::Result<()> {
             .service(custom_routes::echo)
             .service(custom_routes::TestGet)
             .service(custom_routes::index_manual)
+            .service(custom_routes::signup_handler)
             .route("/manualRoute", web::get().to(custom_routes::manual_hello))
             .route("/test_json", web::post().to(custom_routes::enter_username_info))
             // .service(web::resource("/json").route(web::post().to(custom_routes::enter_username_info)))

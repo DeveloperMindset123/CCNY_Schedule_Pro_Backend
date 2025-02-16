@@ -1,6 +1,14 @@
-POST http://localhost:5000/index
+POST http://localhost:5000/signup
 Content-Type: "application/json"
 
 {
-    "name": "Test user", 
-    "number": 100}
+    "first_name": "Ayan", 
+    "last_name": "Das",
+    "email" : "dasa60196@gmail.com",
+    "major" : "computer science",
+    "date_of_birth" : "09/16/2002",
+    "pronouns" : "he/him",
+    "gender" : "male",
+    "degree_type" : "bachelor of science",
+    "college_year" : "4"
+}

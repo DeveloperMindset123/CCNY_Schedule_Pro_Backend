@@ -2,7 +2,7 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
 use futures_util::StreamExt;        // originally futures::StreamExt;
 use serde::{Serialize, Deserialize};
-
+use CCNY_Schedule_Pro_Backend::models::{NewUser, User};
 #[get("/")]
 pub async fn RootRoute() -> impl Responder {
     HttpResponse::Ok().body("Basic Hello World Route")
@@ -89,7 +89,27 @@ pub async fn index_manual(mut payload: web::Payload) -> Result<HttpResponse, Err
     Ok(HttpResponse::Ok().json(obj)) 
 }
 
+#[post("/signup")]
+pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, Error> {
+    let mut body = web::BytesMut::new();        // init variable to store body data
+    while let Some(chunk) = payload.next().await {
+        let chunk = chunk?;
 
+        // error handler
+        if (body.len() + chunk.len()) > MAX_SIZE {
+            return Err(actix_web::error::ErrorBadRequest("overflow"));
+        }
+
+        body.extend_from_slice(&chunk);
+    }
+
+    // convert from json to struct
+    // NOTE : make sure to try unwrapping using ?
+    let user_info = serde_json::from_slice::<NewUser>(&body)?;
+    
+    // handle return type
+    Ok(HttpResponse::Ok().json(user_info))
+}
 pub async fn manual_hello() -> impl Responder {
     HttpResponse::Ok().body("This is a manual hello!")
 }
@@ -102,5 +122,3 @@ pub async fn manual_hello() -> impl Responder {
 pub async fn send_conversation_to_database() -> impl Responder {
     HttpResponse::Ok().body("Not yet implemented.")
 }
-
-// generally passing in JSON data
