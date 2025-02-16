@@ -133,11 +133,20 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     // }
 
     // let results = query.load(&database_connection);
-    
-    
-    let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq("dasa60196@gmail.com")))).get_result(connection);
+        
+    // NOTE : don't prematurely unwrap the boolean value here
+    let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(user_info.email)))).get_result(connection);
 
-    println!("{:?}", email_exists);
+    // returns either Ok(true) or Ok(false)
+    // depending on the existence of the value
+    // println!("{:?}", email_exists.clone().unwrap());
+
+    // return an error message to indicate that email is already in use
+    if email_exists.unwrap() == true {
+        return Ok(HttpResponse::BadRequest().json(serde_json::json!({
+            "message" : "user already exists"
+        })));
+    }
 
 
     // println!("{:?}",users.filter(email.eq(user_info.email)).load(&mut <&mut PgConnection as TryInto<T>>::try_into(database_connection).unwrap()).expect("No Such User"));
