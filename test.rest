@@ -2,9 +2,10 @@ POST http://localhost:5000/signup
 Content-Type: "application/json"
 
 {
-    "first_name": "Someone", 
+    "first_name": "Ayan", 
     "last_name": "Das",
-    "email" : "dasa60196@gmail.com",
+    "email" : "dasa70196@gmail.com",
+    "user_password" : "some_passcode",
     "major" : "computer science",
     "date_of_birth" : "09/16/2002",
     "pronouns" : "he/him",

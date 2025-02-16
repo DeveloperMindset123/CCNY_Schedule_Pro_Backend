@@ -3,7 +3,7 @@
 // #![deny(warnings)]
 mod routes;
 use actix_files::NamedFile;
-use routes::actix_routes as custom_routes;
+use routes::auth_routes;
 use actix_web::{body, get, middleware, rt, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
 use tokio::sync::broadcast;
 use actix_web::middleware::Logger;
@@ -36,14 +36,14 @@ async fn main() -> std::io::Result<()> {
             // .service(web::resource("/send").route(web::post().to(send_to_broadcast_ws)))
             .app_data(web::JsonConfig::default().limit(4096))       // limit the size of payload via global configuration
             .wrap(Logger::default())
-            .service(custom_routes::RootRoute)
-            .service(custom_routes::echo)
-            .service(custom_routes::TestGet)
-            .service(custom_routes::index_manual)
-            .service(custom_routes::signup_handler)
-            .route("/manualRoute", web::get().to(custom_routes::manual_hello))
-            .route("/test_json", web::post().to(custom_routes::enter_username_info))
-            // .service(web::resource("/json").route(web::post().to(custom_routes::enter_username_info)))
+            .service(auth_routes::RootRoute)
+            .service(auth_routes::echo)
+            .service(auth_routes::TestGet)
+            .service(auth_routes::index_manual)
+            .service(auth_routes::signup_handler)
+            .route("/manualRoute", web::get().to(auth_routes::manual_hello))
+            .route("/test_json", web::post().to(auth_routes::enter_username_info))
+            // .service(web::resource("/json").route(web::post().to(auth_routes::enter_username_info)))
     })
     .bind(("127.0.0.1", 5000))?     // self-reference the current device itself
     .run()
@@ -68,8 +68,8 @@ mod tests {
     async fn test_index_get() {
         let app = test::init_service(
             App::new()
-                .service(custom_routes::RootRoute)
-                .service(custom_routes::TestGet)).await;
+                .service(auth_routes::RootRoute)
+                .service(auth_routes::TestGet)).await;
 
         // default() is get
         // let req = test::TestRequest::default().insert_header(ContentType::plaintext()).to_request();

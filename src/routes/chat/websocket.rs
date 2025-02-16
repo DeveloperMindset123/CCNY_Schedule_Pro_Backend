@@ -25,7 +25,7 @@ pub struct Disconnect {
     pub id: usize,
 }
 
-/// Send message to specific room
+// Send message to specific room
 #[derive(Message, Debug)]
 #[rtype(result = "()")]
 pub struct Message {
@@ -37,14 +37,14 @@ pub struct Message {
     pub room: String,
 }
 
-/// List of available rooms
+// List of available rooms
 pub struct ListRooms;
 
 impl actix::Message for ListRooms {
     type Result = Vec<String>;
 }
 
-/// Join room, if room does not exists create new one.
+// Join room, if room does not exists create new one.
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Join {
@@ -64,6 +64,8 @@ pub struct ChatServer {
     rng: ThreadRng,
 }
 
+// we would use the default() method as ChatServer::default()
+// default() method determines the default configuration of ChatServer struct
 impl Default for ChatServer {
     fn default() -> ChatServer {
         // default room

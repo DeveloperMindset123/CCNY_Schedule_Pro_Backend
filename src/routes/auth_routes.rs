@@ -3,7 +3,7 @@ use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpRe
 use futures_util::StreamExt;        // originally futures::StreamExt;
 use serde::{Serialize, Deserialize};
 use CCNY_Schedule_Pro_Backend::models::{NewUser, User};
-use CCNY_Schedule_Pro_Backend::utils::type_of;
+use CCNY_Schedule_Pro_Backend::utils::{type_of, calculate_hash};
 use CCNY_Schedule_Pro_Backend::*;
 use diesel::prelude::*;
 use diesel::dsl::exists;
@@ -95,6 +95,7 @@ pub async fn index_manual(mut payload: web::Payload) -> Result<HttpResponse, Err
     Ok(HttpResponse::Ok().json(obj)) 
 }
 
+// relevant path
 #[post("/signup")]
 pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, Error> {
     let mut body = web::BytesMut::new();        // init variable to store body data
@@ -118,22 +119,18 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     // recreate database connection
     let connection = &mut establish_connection();
 
+    // just a verification check
+    let user_passcode : String = String::from("some_passcode");
+    let test_hash = calculate_hash(&user_passcode);
+    let original_hashed_password = calculate_hash(&user_info.user_password);
 
+    println!("sample user_passcode : {:?}", test_hash);
+    println!("original hashed password : {:?}", original_hashed_password);
+
+    if test_hash == original_hashed_password {
+        println!("Hashed passwords match, allow user to login.");
+    }
     use self::schema::users::dsl::*;
-
-    // test to check if user information can be retrieved successfully
-    // println!("Does user exists? {:#?}", users.filter(email.like(user_info.email)));
-
-
-    // let mut query = users.into_boxed();
-    // // println!("Distinct names : {:?}", distinct_names)
-
-    // if let Some(retrieved_email) = user_info.email {
-    //     query = query.filter(email.eq(retrieved_email));
-    // }
-
-    // let results = query.load(&database_connection);
-        
     // NOTE : don't prematurely unwrap the boolean value here
     let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(user_info.email)))).get_result(connection);
 
@@ -143,9 +140,11 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
     // return an error message to indicate that email is already in use
     if email_exists.unwrap() == true {
-        return Ok(HttpResponse::BadRequest().json(serde_json::json!({
+        return Ok(HttpResponse::BadRequest().json(
+            serde_json::json!({
             "message" : "user already exists"
-        })));
+            })
+        ));
     }
 
 
@@ -158,6 +157,7 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
         user_info.first_name,
         user_info.last_name,
         user_info.email,
+        &calculate_hash(&user_info.user_password),
         user_info.major,
         user_info.date_of_birth,
         user_info.pronouns,

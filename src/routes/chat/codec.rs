@@ -50,6 +50,7 @@ pub enum ChatResponse {
 // Codec for Client -> Server transport
 pub struct ChatCodec;
 
+// decode is a method that is part of the Decoder trait that is being overridden
 impl Decoder for ChatCodec {
     type Item = ChatRequest;
     type Error = io::Error;
@@ -72,6 +73,8 @@ impl Decoder for ChatCodec {
     }
 }
 
+// Encoder<ChatResponse> : ChatResponse is a type to be inherited as a parameter for msg
+// encode is a method part of the Encoder trait that is being overriden
 impl Encoder<ChatResponse> for ChatCodec {
     type Error = io::Error;
 
