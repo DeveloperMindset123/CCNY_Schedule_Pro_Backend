@@ -68,3 +68,9 @@ pub struct NewUser<'a> {
     pub degree_type : &'a str,
     pub college_year : &'a str
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UserLogin {
+    pub email : String,
+    pub password : String
+}

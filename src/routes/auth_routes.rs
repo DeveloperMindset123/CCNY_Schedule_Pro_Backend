@@ -2,12 +2,13 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
 use futures_util::StreamExt;        // originally futures::StreamExt;
 use serde::{Serialize, Deserialize};
-use CCNY_Schedule_Pro_Backend::models::{NewUser, User};
+use CCNY_Schedule_Pro_Backend::models::{NewUser, User, UserLogin};
 use CCNY_Schedule_Pro_Backend::utils::{type_of, calculate_hash};
 use CCNY_Schedule_Pro_Backend::*;
 use diesel::prelude::*;
 use diesel::dsl::exists;
 use diesel::select;
+use diesel::sql_query;
 
 #[get("/")]
 pub async fn RootRoute() -> impl Responder {
@@ -111,25 +112,11 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     }
 
     // convert from json to struct
-    // NOTE : make sure to try unwrapping using ?
+    // NOTE : make sure to try unwrapping using ? 
     let user_info = serde_json::from_slice::<NewUser>(&body)?;
-
-    println!("Type info of user_info:\n{:?}", type_of(&user_info.first_name));
 
     // recreate database connection
     let connection = &mut establish_connection();
-
-    // just a verification check
-    let user_passcode : String = String::from("some_passcode");
-    let test_hash = calculate_hash(&user_passcode);
-    let original_hashed_password = calculate_hash(&user_info.user_password);
-
-    println!("sample user_passcode : {:?}", test_hash);
-    println!("original hashed password : {:?}", original_hashed_password);
-
-    if test_hash == original_hashed_password {
-        println!("Hashed passwords match, allow user to login.");
-    }
     use self::schema::users::dsl::*;
     // NOTE : don't prematurely unwrap the boolean value here
     let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(user_info.email)))).get_result(connection);
@@ -157,7 +144,7 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
         user_info.first_name,
         user_info.last_name,
         user_info.email,
-        &calculate_hash(&user_info.user_password),
+        &calculate_hash(&user_info.user_password),      // hash and insert to database
         user_info.major,
         user_info.date_of_birth,
         user_info.pronouns,
@@ -168,6 +155,73 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     // handle return type
     Ok(HttpResponse::Ok().json(user_info))
 }
+
+#[post("/signin")]
+pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, Error> {
+    // inner namespce search
+    use self::schema::users::dsl::*;
+
+    let mut body = web::BytesMut::new();        // init variable to store body data
+    while let Some(chunk) = payload.next().await {
+        let chunk = chunk?;
+
+        // error handler
+        if (body.len() + chunk.len()) > MAX_SIZE {
+            return Err(actix_web::error::ErrorBadRequest("overflow"));
+        }
+
+        body.extend_from_slice(&chunk);
+    }
+
+    let login_creds = serde_json::from_slice::<UserLogin>(&body)?;
+
+    let connection = &mut establish_connection();
+
+    // search and check to see if user exists
+    // NOTE : don't prematurely unwrap the boolean value here
+    // let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(login_creds.clone().email)))).get_result(connection);
+
+    // let val = users
+    // .filter(email.eq(login_creds.clone().email))
+    // .or_filter(user_password.eq(calculate_hash(&login_creds.clone().password))).select(user_password).get_result::<String>(connection);
+
+    // Retrieve the password corresponding to the email
+    // match and check if the hashed email matches the email from user input
+    // if so, successful login, otherwise, unsuccessful login implemenetation
+
+    // this is the same as writting the following SQL statement below:
+    // SELECT user_password FROM users WHERE email={provided_input_email} 
+    let user_password_verification = users.filter(email.eq(login_creds.clone().email)).select(user_password).get_result::<String>(connection);
+
+    
+
+    println!("{user_password_verification:?}");
+
+    // let example_query=sql_query("select first_name,last_name, email,user_password from users where email=? and user_password=?");
+    // let query_result : QueryResult<String> = example_query
+    //     .bind::<diesel::sql_types::Text,_>(login_creds.clone().email)
+    //     .bind::<diesel::sql_types::Text,_>(calculate_hash(&login_creds.clone().password))
+    //     .get_result(connection);
+
+    // let user_creds_check : QueryResult<bool> = select(exists(
+    //     users.filter()
+    // ))
+
+    // otherwise, if email exists, we then need to compare and check if password matches
+    
+
+    // if email_exists.unwrap() == false {
+    //     return Ok(HttpResponse::BadRequest().json(
+    //         serde_json::json!({
+    //         "message" : "user by this email doesn't exist, please register before continuing."
+    //         })
+    //     ));
+    // }
+
+    // TODO : perform a nested filter to check if current email and password combination exists
+    Ok(HttpResponse::Ok().json(login_creds))
+}
+
 pub async fn manual_hello() -> impl Responder {
     HttpResponse::Ok().body("This is a manual hello!")
 }

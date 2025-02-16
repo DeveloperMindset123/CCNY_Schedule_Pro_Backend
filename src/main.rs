@@ -41,6 +41,7 @@ async fn main() -> std::io::Result<()> {
             .service(auth_routes::TestGet)
             .service(auth_routes::index_manual)
             .service(auth_routes::signup_handler)
+            .service(auth_routes::signin_handler)
             .route("/manualRoute", web::get().to(auth_routes::manual_hello))
             .route("/test_json", web::post().to(auth_routes::enter_username_info))
             // .service(web::resource("/json").route(web::post().to(auth_routes::enter_username_info)))
