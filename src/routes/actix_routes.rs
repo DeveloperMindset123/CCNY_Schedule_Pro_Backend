@@ -30,6 +30,8 @@ pub async fn echo(req_body : String) -> impl Responder {
 //     Ok(format!("Welcome {}!", info.username))
 // }
 
+// TODO : replace with actual data container struct
+// this is primarily for example purpose
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MyObj {
     name: String,
@@ -54,6 +56,7 @@ async fn extract_item(item: web::Json<MyObj>, req: HttpRequest) -> HttpResponse 
 pub const MAX_SIZE : usize = 262_144;
 
 // example to retrieve general JSON payload data
+// use this as template reference for writting api routes that accepts json data
 #[post("/index")]
 pub async fn index_manual(mut payload: web::Payload) -> Result<HttpResponse, Error> {
     
