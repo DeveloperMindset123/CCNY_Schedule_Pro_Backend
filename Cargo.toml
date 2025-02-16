@@ -40,7 +40,10 @@ tracing = "0.1.41"
 tracing-actix-web = "0.7.15"
 
 # database dependancies
-diesel = { version = "2.2.0", features = ["postgres"] }
+diesel = { version = "2.2.0", features = [
+    "postgres",
+    "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+] }
 dotenvy = "0.15"
 
 # add custom libraries

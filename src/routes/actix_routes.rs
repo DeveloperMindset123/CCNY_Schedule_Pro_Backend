@@ -5,6 +5,9 @@ use serde::{Serialize, Deserialize};
 use CCNY_Schedule_Pro_Backend::models::{NewUser, User};
 use CCNY_Schedule_Pro_Backend::utils::type_of;
 use CCNY_Schedule_Pro_Backend::*;
+use diesel::prelude::*;
+use diesel::dsl::exists;
+use diesel::select;
 
 #[get("/")]
 pub async fn RootRoute() -> impl Responder {
@@ -113,12 +116,36 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     println!("Type info of user_info:\n{:?}", type_of(&user_info.first_name));
 
     // recreate database connection
-    let database_connection = &mut establish_connection();
+    let connection = &mut establish_connection();
+
+
+    use self::schema::users::dsl::*;
+
+    // test to check if user information can be retrieved successfully
+    // println!("Does user exists? {:#?}", users.filter(email.like(user_info.email)));
+
+
+    // let mut query = users.into_boxed();
+    // // println!("Distinct names : {:?}", distinct_names)
+
+    // if let Some(retrieved_email) = user_info.email {
+    //     query = query.filter(email.eq(retrieved_email));
+    // }
+
+    // let results = query.load(&database_connection);
     
+    
+    let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq("dasa60196@gmail.com")))).get_result(connection);
+
+    println!("{:?}", email_exists);
+
+
+    // println!("{:?}",users.filter(email.eq(user_info.email)).load(&mut <&mut PgConnection as TryInto<T>>::try_into(database_connection).unwrap()).expect("No Such User"));
+
     // TODO : check if user by current email already exists
     // pass in all corresponding data
     let new_user = create_user(
-        database_connection,
+        connection,
         user_info.first_name,
         user_info.last_name,
         user_info.email,
