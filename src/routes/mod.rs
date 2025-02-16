@@ -1,2 +1,2 @@
 pub mod chat;
-pub mod actix_routes;
+pub mod auth_routes;

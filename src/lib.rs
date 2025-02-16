@@ -1,5 +1,6 @@
 pub mod models;
 pub mod schema;
+pub mod utils;
 
 // file to show the last five published posts
 use diesel::prelude::*;
@@ -40,6 +41,7 @@ pub fn create_user(
     first_name : &str,
     last_name : &str,
     email : &str,
+    user_password : &str,
     major : &str,
     date_of_birth : &str,
     pronouns : &str,
@@ -55,6 +57,7 @@ pub fn create_user(
         first_name,
         last_name,
         email,
+        user_password,
         major,
         date_of_birth,
         pronouns,

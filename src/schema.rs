@@ -15,6 +15,7 @@ diesel::table! {
         first_name -> Varchar,
         last_name -> Varchar,
         email -> Text,
+        user_password -> Text,
         major -> Varchar,
         date_of_birth -> Text,
         pronouns -> Varchar,

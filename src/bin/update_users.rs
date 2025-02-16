@@ -24,8 +24,8 @@ fn main() {
     // retrieve and update user email
     // test to check
     // search for the user based on the id
-    let user = diesel::update(users.find(id))
-        .set(email.eq("dasa50196@gmail.com"))
+    let user = diesel::update(users.find(id))       // search based on some provided info
+        .set(email.eq("dasa50196@gmail.com"))       // update based on info that has been discovered
         .returning(User::as_returning())
         .get_result(connection)
         .unwrap();

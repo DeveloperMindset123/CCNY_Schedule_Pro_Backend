@@ -2,28 +2,30 @@
 //! And manages available rooms. Peers send messages to other peers in same
 //! room through `ChatServer`.
 // code from server 
+// actix is primarily used for websocket, otherwise, use actix_web instead
 use std::collections::{HashMap, HashSet};
 use actix::prelude::*;
 use rand::{rngs::ThreadRng, Rng};
 use crate::routes::chat::session;
 
-/// Message for chat server communications
-
-/// New chat session is created
+// Message for chat server communications
+// New chat session is created
+// attaches the Message trait to Connect struct
+// addr determines who will be recieving the current message within the session
 #[derive(Message)]
 #[rtype(usize)]
 pub struct Connect {
     pub addr: Recipient<session::Message>,
 }
 
-/// Session is disconnected
+// Session is disconnected
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Disconnect {
     pub id: usize,
 }
 
-/// Send message to specific room
+// Send message to specific room
 #[derive(Message, Debug)]
 #[rtype(result = "()")]
 pub struct Message {
@@ -35,14 +37,14 @@ pub struct Message {
     pub room: String,
 }
 
-/// List of available rooms
+// List of available rooms
 pub struct ListRooms;
 
 impl actix::Message for ListRooms {
     type Result = Vec<String>;
 }
 
-/// Join room, if room does not exists create new one.
+// Join room, if room does not exists create new one.
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Join {
@@ -52,14 +54,18 @@ pub struct Join {
     pub name: String,
 }
 
-/// `ChatServer` manages chat rooms and responsible for coordinating chat
-/// session. implementation is super primitive
+// `ChatServer` manages chat rooms and responsible for coordinating chat
+// session. implementation is super primitive
+// sessions uses HashMap where current session number is the unique key
+// whereas the values are the Recipient who are the Recipients
 pub struct ChatServer {
     sessions: HashMap<usize, Recipient<session::Message>>,
     rooms: HashMap<String, HashSet<usize>>,
     rng: ThreadRng,
 }
 
+// we would use the default() method as ChatServer::default()
+// default() method determines the default configuration of ChatServer struct
 impl Default for ChatServer {
     fn default() -> ChatServer {
         // default room
@@ -89,16 +95,15 @@ impl ChatServer {
     }
 }
 
-/// Make actor from `ChatServer`
+// Make actor from `ChatServer`
 impl Actor for ChatServer {
-    /// We are going to use simple Context, we just need ability to communicate
-    /// with other actors.
+    // We are going to use simple Context, we just need ability to communicate
+    // with other actors.
     type Context = Context<Self>;
 }
 
-/// Handler for Connect message.
-///
-/// Register new session and assign unique id to this session
+// Handler for Connect message.
+// Register new session and assign unique id to this session
 impl Handler<Connect> for ChatServer {
     type Result = usize;
 
@@ -120,7 +125,7 @@ impl Handler<Connect> for ChatServer {
     }
 }
 
-/// Handler for Disconnect message.
+// Handler for Disconnect message.
 impl Handler<Disconnect> for ChatServer {
     type Result = ();
 
@@ -154,7 +159,7 @@ impl Handler<Message> for ChatServer {
     }
 }
 
-/// Handler for `ListRooms` message.
+// Handler for `ListRooms` message.
 impl Handler<ListRooms> for ChatServer {
     type Result = MessageResult<ListRooms>;
 

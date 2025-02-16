@@ -1,27 +1,21 @@
-//! `ClientSession` is an actor, it manages peer tcp connection and
-//! proxies commands from peer to `ChatServer`.
-
+// ClientSession is an actor, it manages peer tcp connection
+// and proxies commands from peer to ChatServer.
 use std::{
     io, net,
     str::FromStr,
     time::{Duration, Instant},
-};
-use std::borrow::BorrowMut;
-// mod routes;
+};  
+use std::borrow::BorrowMut;     // to use as_mut()
+
+// spawn : spawns a future on the current thread as a new task
+// spawning allows the process of running a new asynchronous task in the background
+// this allows us to continue executing other code while it runs
 use actix::{prelude::*, spawn};
 use tokio::{
     io::{split, WriteHalf},
     net::{TcpListener, TcpStream},
 };
 use tokio_util::codec::FramedRead;
-// mod websocket;
-// use crate::websocket;
-
-// use codec;
-// use crate::utils::{
-//     codec::{ChatCodec, ChatRequest, ChatResponse},
-//     websocket::{self, ChatServer},
-// };
 
 // use crate::routes::chat::codec::{ChatCodec, ChatRequest, ChatResponse};
 use crate::routes::chat::codec::ChatCodec;
@@ -29,15 +23,16 @@ use crate::routes::chat::codec::ChatRequest;
 use crate::routes::chat::codec::ChatResponse;
 use crate::routes::chat::websocket::{self, ChatServer};
 
-use serde::{Serialize, Deserialize};
+// to inherit Serialize and Deserialize traits for structs
+use serde::{Serialize, Deserialize};        
 use serde::*;
 
-/// Chat server sends this messages to session
+// Chat server sends this messages to session
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Message(pub String);
 
-/// `ChatSession` actor is responsible for tcp peer communications.
+// `ChatSession` actor is responsible for tcp peer communications.
 pub struct ChatSession {
     /// unique session id
     id: usize,
@@ -53,8 +48,8 @@ pub struct ChatSession {
 }
 
 impl Actor for ChatSession {
-    /// For tcp communication we are going to use `FramedContext`.
-    /// It is convenient wrapper around `Framed` object from `tokio_io`
+    // For tcp communication we are going to use `FramedContext`.
+    // It is convenient wrapper around `Framed` object from `tokio_io`
     type Context = Context<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
@@ -205,8 +200,8 @@ impl ChatSession {
     }
 }
 
-/// Define TCP server that will accept incoming TCP connection and create
-/// chat actors.
+// Define TCP server that will accept incoming TCP connection and create
+// chat actors.
 pub fn tcp_server(_s: &str, server: Addr<ChatServer>) {
     // Create server listener
     let addr = net::SocketAddr::from_str("127.0.0.1:12345").unwrap();
