@@ -2,7 +2,7 @@ POST http://localhost:5000/signup
 Content-Type: "application/json"
 
 {
-    "first_name": "Ayan", 
+    "first_name": "Someone", 
     "last_name": "Das",
     "email" : "dasa60196@gmail.com",
     "major" : "computer science",

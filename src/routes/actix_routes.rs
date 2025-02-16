@@ -3,6 +3,9 @@ use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpRe
 use futures_util::StreamExt;        // originally futures::StreamExt;
 use serde::{Serialize, Deserialize};
 use CCNY_Schedule_Pro_Backend::models::{NewUser, User};
+use CCNY_Schedule_Pro_Backend::utils::type_of;
+use CCNY_Schedule_Pro_Backend::*;
+
 #[get("/")]
 pub async fn RootRoute() -> impl Responder {
     HttpResponse::Ok().body("Basic Hello World Route")
@@ -106,7 +109,26 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     // convert from json to struct
     // NOTE : make sure to try unwrapping using ?
     let user_info = serde_json::from_slice::<NewUser>(&body)?;
+
+    println!("Type info of user_info:\n{:?}", type_of(&user_info.first_name));
+
+    // recreate database connection
+    let database_connection = &mut establish_connection();
     
+    // TODO : check if user by current email already exists
+    // pass in all corresponding data
+    let new_user = create_user(
+        database_connection,
+        user_info.first_name,
+        user_info.last_name,
+        user_info.email,
+        user_info.major,
+        user_info.date_of_birth,
+        user_info.pronouns,
+        user_info.gender,
+        user_info.degree_type,
+        user_info.college_year
+    );
     // handle return type
     Ok(HttpResponse::Ok().json(user_info))
 }
