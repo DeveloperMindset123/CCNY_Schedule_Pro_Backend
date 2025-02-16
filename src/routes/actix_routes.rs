@@ -63,18 +63,29 @@ pub async fn index_manual(mut payload: web::Payload) -> Result<HttpResponse, Err
     let mut body = web::BytesMut::new();
     while let Some(chunk) = payload.next().await {
         let chunk = chunk?;
+        println!("current chunk : {chunk:?}");
         
         if (body.len() + chunk.len()) > MAX_SIZE {
             return Err(actix_web::error::ErrorBadRequest("overflow"));
         }
+
+        println!("body data : {body:?}");
+
+        // extend_from_slice() : appends given bytes to this bytes mut
         body.extend_from_slice(&chunk);
     }
 
-    
+    // serde_json::from_slice : is used to convert a bytes to corresponding JSON text
+    // refer to the documentation for example corresponding to this method
+    // @see https://docs.rs/serde_json/1.0.138/serde_json/fn.from_slice.html
     let obj = serde_json::from_slice::<MyObj>(&body)?;      // extract struct from json
 
     // tested to check if payload accepts data successfully
-    println!("{:?}", obj.clone());
+    // for testing purposes
+    // println!("{:?}", obj.clone());
+
+    // satisfy return type
+    // return the json data as part of the successful response
     Ok(HttpResponse::Ok().json(obj)) 
 }
 
