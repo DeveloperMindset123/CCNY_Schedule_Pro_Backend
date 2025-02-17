@@ -3,7 +3,7 @@
 // #![deny(warnings)]
 mod routes;
 use actix_files::NamedFile;
-use routes::{auth_routes, rmp_routes};
+use routes::{auth_routes, rmp_routes, course_routes};
 use actix_web::{body, get, middleware, rt, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
 use tokio::sync::broadcast;
 use actix_web::middleware::Logger;
@@ -24,6 +24,8 @@ async fn main() -> std::io::Result<()> {
      */
     HttpServer::new(move || {
         App::new()
+        // attach pre-defined routes using the .service()
+        // attach manual routes using .route() method (meaning path for the route hanlder functions hasn't been defined)
         // websocket UI html file
             // .service(web::resource("/").to(index))
 
@@ -45,6 +47,10 @@ async fn main() -> std::io::Result<()> {
             .service(rmp_routes::professor_summary_handler)
             .service(rmp_routes::professor_list_handler)
             .service(rmp_routes::professor_summary_handler)
+            .service(rmp_routes::professor_comments_handler)
+            .service(course_routes::retrieve_course_info)
+            .service(course_routes::retrieve_department_list)
+            .service(course_routes::retrieve_course_list)
             .route("/manualRoute", web::get().to(auth_routes::manual_hello))
             .route("/test_json", web::post().to(auth_routes::enter_username_info))
             // .service(web::resource("/json").route(web::post().to(auth_routes::enter_username_info)))

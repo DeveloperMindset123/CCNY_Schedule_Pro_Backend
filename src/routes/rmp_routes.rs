@@ -33,7 +33,8 @@ pub async fn professor_summary_handler(query_params : web::Path<(String)>) -> Re
 
 // retrieve comments about a professor
 // based on query parameters provided as query params
-// #[get("/rmp/comments/{professor_name}")]
-// pub async fn professor_comments_handler() {
-//     todo!("not yet implemented");
-// }
+#[get("/rmp/comments/{professor_name}")]
+pub async fn professor_comments_handler(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
+    let name_professor = query_params.into_inner();
+    Ok(HttpResponse::Ok().json(utils::retrieve_professor_comments(&name_professor).await))
+}

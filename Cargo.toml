@@ -47,5 +47,5 @@ diesel = { version = "2.2.0", features = [
 dotenvy = "0.15"
 
 # add custom libraries
-ccny-course-catalog = "0.1.1"
+ccny-course-catalog = "0.1.3"
 rate_my_professor_api_rs = "0.1.5"

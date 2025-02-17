@@ -29,9 +29,17 @@ pub async fn get_professor_list() -> serde_json::Value  {
 pub async fn retrieve_professor_summary(professor_name : &str) -> serde_json::Value {
     let mut rmp_instance = RateMyProfessor::construct_college_and_professor("City College of New York", professor_name);
     let teacher_summary_res = rmp_instance.get_teacher_summary(true).await;
-    // println!("{teacher_summary_res:#?}");
+    
+    // return the response as json data
     serde_json::json!(teacher_summary_res.unwrap())
+}
 
+pub async fn retrieve_professor_comments(professor_name : &str) -> serde_json::Value {
+    let mut rmp_instance = RateMyProfessor::construct_college_and_professor("City College of New York", professor_name);
+
+    serde_json::json!(rmp_instance.get_professor_comments().await.unwrap())
+    // Ok(String::from("Success"))
+    // String::from("Success")
 }
  
 // example usage

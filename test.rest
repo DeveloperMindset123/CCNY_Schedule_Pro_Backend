@@ -24,4 +24,4 @@
 
 # GET http://localhost:5000/rmp/summary/douglas 
 # GET http://localhost:5000/rmp/get_professor_list
-GET http://localhost:5000/rmp/summary/micheal grossberg
+GET http://localhost:5000/ccny/courses/electrical engineering
