@@ -179,7 +179,15 @@ pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
     // search and check to see if user exists
     // NOTE : don't prematurely unwrap the boolean value here
-    // let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(login_creds.clone().email)))).get_result(connection);
+    // we first want to check if the provided email exists
+    let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(login_creds.clone().email)))).get_result(connection);
+
+    if email_exists.unwrap() == false {
+        return Ok(HttpResponse::BadRequest().json(
+            serde_json::json!({
+            "error" : "email doesn't exist, please register first"
+            })));
+    }
 
     // let val = users
     // .filter(email.eq(login_creds.clone().email))
@@ -191,11 +199,18 @@ pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
     // this is the same as writting the following SQL statement below:
     // SELECT user_password FROM users WHERE email={provided_input_email} 
+    // retrieves password based on provided email address
     let user_password_verification = users.filter(email.eq(login_creds.clone().email)).select(user_password).get_result::<String>(connection);
 
-    
+    // check if the hashed password matches
+    if calculate_hash(&login_creds.clone().password) != user_password_verification.unwrap() {
+        return Ok(HttpResponse::BadRequest().json(
+            serde_json::json!({
+            "error" : "Incorrect password, please enter the correct password"
+            })));
+    }
 
-    println!("{user_password_verification:?}");
+    
 
     // let example_query=sql_query("select first_name,last_name, email,user_password from users where email=? and user_password=?");
     // let query_result : QueryResult<String> = example_query

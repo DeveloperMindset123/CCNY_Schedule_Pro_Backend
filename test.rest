@@ -18,6 +18,6 @@ POST http://localhost:5000/signin
 Content-Type: "application/json"
 
 {
-    "email" : "dasa70196@gmail.com",
-    "password" : "some_passcode"
+    "email" : "dasa90196@gmail.com",
+    "password" : "another_passcode"
 }
