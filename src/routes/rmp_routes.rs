@@ -24,10 +24,11 @@ pub async fn professor_list_handler() -> Result<HttpResponse, Error> {
 // retrieve summary of professor based on professor name
 // name of professor will be passed in as query parameter
 #[get("/rmp/summary/{professor_name}")]
-pub async fn professor_summary_handler(query_params : web::Path<(String)>) -> Result<String> {
+pub async fn professor_summary_handler(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
     // extract query param
     let professor = query_params.into_inner();
-    Ok(format!("Retrieved user query : {}!", professor))
+    let professor_summary = utils::retrieve_professor_summary(&professor).await;
+    Ok(HttpResponse::Ok().json(professor_summary))
 }
 
 // retrieve comments about a professor
