@@ -14,10 +14,12 @@
 #     "college_year" : "4"
 # }
 
-POST http://localhost:5000/signin
-Content-Type: "application/json"
+# POST http://localhost:5000/signin
+# Content-Type: "application/json"
 
-{
-    "email" : "dasa90196@gmail.com",
-    "password" : "another_passcode"
-}
+# {
+#     "email" : "dasa90196@gmail.com",
+#     "password" : "another_passcode"
+# }
+
+GET http://localhost:5000/rmp/summary/douglas 
