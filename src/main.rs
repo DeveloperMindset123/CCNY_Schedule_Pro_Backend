@@ -3,7 +3,7 @@
 // #![deny(warnings)]
 mod routes;
 use actix_files::NamedFile;
-use routes::auth_routes;
+use routes::{auth_routes, rmp_routes};
 use actix_web::{body, get, middleware, rt, post, web, App, HttpResponse, HttpServer, Responder, HttpRequest, Error};
 use tokio::sync::broadcast;
 use actix_web::middleware::Logger;
@@ -42,6 +42,9 @@ async fn main() -> std::io::Result<()> {
             .service(auth_routes::index_manual)
             .service(auth_routes::signup_handler)
             .service(auth_routes::signin_handler)
+            .service(rmp_routes::professor_summary_handler)
+            .service(rmp_routes::professor_list_handler)
+            .service(rmp_routes::professor_summary_handler)
             .route("/manualRoute", web::get().to(auth_routes::manual_hello))
             .route("/test_json", web::post().to(auth_routes::enter_username_info))
             // .service(web::resource("/json").route(web::post().to(auth_routes::enter_username_info)))

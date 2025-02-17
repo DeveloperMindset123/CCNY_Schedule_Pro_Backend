@@ -1,7 +1,6 @@
 pub mod models;
 pub mod schema;
 pub mod utils;
-
 // file to show the last five published posts
 use diesel::prelude::*;
 use dotenvy::dotenv;

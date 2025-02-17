@@ -14,10 +14,14 @@
 #     "college_year" : "4"
 # }
 
-POST http://localhost:5000/signin
-Content-Type: "application/json"
+# POST http://localhost:5000/signin
+# Content-Type: "application/json"
 
-{
-    "email" : "dasa70196@gmail.com",
-    "password" : "some_passcode"
-}
+# {
+#     "email" : "dasa90196@gmail.com",
+#     "password" : "another_passcode"
+# }
+
+# GET http://localhost:5000/rmp/summary/douglas 
+# GET http://localhost:5000/rmp/get_professor_list
+GET http://localhost:5000/rmp/summary/micheal grossberg

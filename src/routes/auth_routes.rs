@@ -134,9 +134,6 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
         ));
     }
 
-
-    // println!("{:?}",users.filter(email.eq(user_info.email)).load(&mut <&mut PgConnection as TryInto<T>>::try_into(database_connection).unwrap()).expect("No Such User"));
-
     // TODO : check if user by current email already exists
     // pass in all corresponding data
     let new_user = create_user(
@@ -179,11 +176,15 @@ pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
     // search and check to see if user exists
     // NOTE : don't prematurely unwrap the boolean value here
-    // let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(login_creds.clone().email)))).get_result(connection);
+    // we first want to check if the provided email exists
+    let email_exists : QueryResult<bool> = select(exists(users.filter(email.eq(login_creds.clone().email)))).get_result(connection);
 
-    // let val = users
-    // .filter(email.eq(login_creds.clone().email))
-    // .or_filter(user_password.eq(calculate_hash(&login_creds.clone().password))).select(user_password).get_result::<String>(connection);
+    if email_exists.unwrap() == false {
+        return Ok(HttpResponse::BadRequest().json(
+            serde_json::json!({
+            "error" : "email doesn't exist, please register first"
+            })));
+    }
 
     // Retrieve the password corresponding to the email
     // match and check if the hashed email matches the email from user input
@@ -191,34 +192,18 @@ pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
     // this is the same as writting the following SQL statement below:
     // SELECT user_password FROM users WHERE email={provided_input_email} 
+    // retrieves password based on provided email address
     let user_password_verification = users.filter(email.eq(login_creds.clone().email)).select(user_password).get_result::<String>(connection);
 
-    
+    // check if the hashed password matches
+    if calculate_hash(&login_creds.clone().password) != user_password_verification.unwrap() {
+        return Ok(HttpResponse::BadRequest().json(
+            serde_json::json!({
+            "error" : "Incorrect password, please enter the correct password"
+            })));
+    }
 
-    println!("{user_password_verification:?}");
-
-    // let example_query=sql_query("select first_name,last_name, email,user_password from users where email=? and user_password=?");
-    // let query_result : QueryResult<String> = example_query
-    //     .bind::<diesel::sql_types::Text,_>(login_creds.clone().email)
-    //     .bind::<diesel::sql_types::Text,_>(calculate_hash(&login_creds.clone().password))
-    //     .get_result(connection);
-
-    // let user_creds_check : QueryResult<bool> = select(exists(
-    //     users.filter()
-    // ))
-
-    // otherwise, if email exists, we then need to compare and check if password matches
-    
-
-    // if email_exists.unwrap() == false {
-    //     return Ok(HttpResponse::BadRequest().json(
-    //         serde_json::json!({
-    //         "message" : "user by this email doesn't exist, please register before continuing."
-    //         })
-    //     ));
-    // }
-
-    // TODO : perform a nested filter to check if current email and password combination exists
+    // TODO : perhaps implement a better success logic, rather than revealing user input
     Ok(HttpResponse::Ok().json(login_creds))
 }
 
