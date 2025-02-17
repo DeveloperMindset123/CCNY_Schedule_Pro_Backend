@@ -8,11 +8,18 @@ use diesel::prelude::*;
 use diesel::dsl::exists;
 use diesel::select;
 use diesel::sql_query;
+use rateMyProfessorApi_rs::methods::RateMyProfessor;
 
-// #[get("/rmp/get_professor_list")]
-// pub async fn professor_list_handler() {
-//     todo!("not yet implemented");
-// }
+#[get("/rmp/get_professor_list")]
+pub async fn professor_list_handler() -> Result<HttpResponse, Error> {
+    let professor_data = utils::get_professor_list().await;
+
+    // testing purpose to check if return type works
+    // println!("{:#?}", professor_data);     // should be serde_json::Value type
+
+    // Ok(format!("success"))
+    Ok(HttpResponse::Ok().json(professor_data))
+}
 
 // retrieve summary of professor based on professor name
 // name of professor will be passed in as query parameter
