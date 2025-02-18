@@ -1,6 +1,7 @@
 use std::any::type_name;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use rateMyProfessorApi_rs::methods::RateMyProfessor;
+use ccny_course_catalog::CCNYCourseCatalog;
 
 pub fn type_of<T>(_: T) -> &'static str {
     type_name::<T>()
@@ -41,6 +42,22 @@ pub async fn retrieve_professor_comments(professor_name : &str) -> serde_json::V
     // Ok(String::from("Success"))
     // String::from("Success")
 }
+
+// define utility function for course_routes
+// utilizing the methods within CCNY Course Catalog wrapper
+// get_department_list() returns Vec<String> type data
+// which will then be converted into serde_json::Value using serde_json::json!() macro
+pub async fn retrieve_department_list_helper() -> serde_json::Value {
+    // create the course instance based on the name of the department
+    // since no department value will be passed in
+    // the default value can remain as "computer science" instead.
+    let mut course_instance = CCNYCourseCatalog::new(String::from("computer science"), Some(String::from("")));
+    serde_json::json!(CCNYCourseCatalog::get_department_list())
+}
+
+// pub async fn retrieve_department_list_helper(department : &str) -> serde_json::Value {
+//     let
+// }
  
 // example usage
 // fn main() {

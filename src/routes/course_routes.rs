@@ -13,15 +13,15 @@ use ccny_course_catalog::CCNYCourseCatalog;
 
 // returns list of courses within the current department specified
 #[get("/ccny/courses/{department}")]
-pub async fn retrieve_course_list(query_params : web::Path<(String)>) -> Result<String> {
-    Ok(String::from("Not yet implemented."))
+pub async fn retrieve_course_list(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))
 }
 
 // retrieve list of departments
 // available to select from
 #[get("/ccny/departments")]
-pub async fn retrieve_department_list() -> Result<String> {
-    Ok("Not Yet Implemented".to_string())
+pub async fn retrieve_department_list() -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))
 }
 
 // retrieves information about a specific course
