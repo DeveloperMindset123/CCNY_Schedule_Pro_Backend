@@ -49,7 +49,7 @@ async fn main() -> std::io::Result<()> {
             .service(rmp_routes::professor_summary_handler)
             .service(rmp_routes::professor_comments_handler)
             .service(course_routes::retrieve_course_info)
-            // .service(course_routes::retrieve_department_list)
+            .service(course_routes::retrieve_department_list)
             .service(course_routes::retrieve_course_list)
             .route("/manualRoute", web::get().to(auth_routes::manual_hello))
             .route("/test_json", web::post().to(auth_routes::enter_username_info))

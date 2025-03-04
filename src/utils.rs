@@ -65,6 +65,12 @@ pub async fn retrieve_department_list_helper() -> serde_json::Value {
     serde_json::json!(CCNYCourseCatalog::get_department_list())
 }
 
+pub async fn retrieve_course_info_helper(department_input : &str, course_input : &str) -> serde_json::Value {
+    let mut course_instance = CCNYCourseCatalog::new(String::from(department_input),Some(String::from(course_input)));
+    serde_json::json!(course_instance.get_course_info().await.unwrap())
+
+}
+
 // pub async fn retrieve_department_list_helper(department : &str) -> serde_json::Value {
 //     let
 // }
