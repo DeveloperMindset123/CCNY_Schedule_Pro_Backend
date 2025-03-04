@@ -14,6 +14,16 @@ pub fn calculate_hash<T: Hash>(t: &T) -> String {
     s.finish().to_string()      // convert u64 output to string output
 }
 
+pub async fn retrieve_course_list_helper(user_department_name : &str) -> serde_json::Value {
+
+    // left course_name empty (not needed in this case)
+    let mut college_instance = CCNYCourseCatalog::new(String::from(user_department_name), Some(String::from("")));
+
+    // retrieve list of courses based on department name
+    let mut courses_list_res = college_instance.get_courses_list().await;
+    serde_json::json!(courses_list_res.unwrap())
+}
+
 // helper function for rmp routes api wrappers
 // this function will fetch and return the professor list of CCNY
 // in JSON format

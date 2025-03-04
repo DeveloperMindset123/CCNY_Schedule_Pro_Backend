@@ -155,7 +155,7 @@ pub async fn signup_handler(mut payload : web::Payload) -> Result<HttpResponse, 
 
 #[post("/signin")]
 pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, Error> {
-    // inner namespce search
+    // inner namespace search
     use self::schema::users::dsl::*;
 
     let mut body = web::BytesMut::new();        // init variable to store body data

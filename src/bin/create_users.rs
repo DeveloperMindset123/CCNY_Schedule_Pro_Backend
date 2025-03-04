@@ -85,6 +85,7 @@ fn main() {
         pronouns,
         gender,
         degree_type,
+        degree_type,
         college_year 
     );
     println!("\n Saved draft user with name {first_name:?}, {last_name:?} containing ID : {}", user.id);

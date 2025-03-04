@@ -2,14 +2,14 @@
 # Content-Type: "application/json"
 
 # {
-#     "first_name": "Nur", 
-#     "last_name": "Mazumder",
-#     "email" : "dasa60196@gmail.com",
+#     "first_name": "Arna", 
+#     "last_name": "Sengupta",
+#     "email" : "dasa10196@gmail.com",
 #     "user_password" : "another_passcode",
 #     "major" : "computer science",
 #     "date_of_birth" : "08/13/2002",
-#     "pronouns" : "he/him",
-#     "gender" : "male",
+#     "pronouns" : "she/her",
+#     "gender" : "female",
 #     "degree_type" : "bachelor of science",
 #     "college_year" : "4"
 # }
@@ -18,7 +18,7 @@
 # Content-Type: "application/json"
 
 # {
-#     "email" : "dasa90196@gmail.com",
+#     "email" : "dasa80196@gmail.com",
 #     "password" : "another_passcode"
 # }
 

@@ -12,6 +12,7 @@ use diesel::sql_query;
 use ccny_course_catalog::CCNYCourseCatalog;
 
 // returns list of courses within the current department specified
+// TODO : implement this
 #[get("/ccny/courses/{department}")]
 pub async fn retrieve_course_list(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))
@@ -19,10 +20,11 @@ pub async fn retrieve_course_list(query_params : web::Path<(String)>) -> Result<
 
 // retrieve list of departments
 // available to select from
-#[get("/ccny/departments")]
-pub async fn retrieve_department_list() -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))
-}
+// TODO : implement this
+// #[get("/ccny/departments")]
+// pub async fn retrieve_department_list(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
+//     Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))
+// }
 
 // retrieves information about a specific course
 // based on the provided department and course name
