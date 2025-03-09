@@ -19,7 +19,6 @@ pub async fn retrieve_course_list(query_params : web::Path<(String)>) -> Result<
 
 // retrieve list of departments
 // available to select from
-// TODO : implement this
 #[get("/ccny/departments")]
 pub async fn retrieve_department_list(query_params : web::Path<(String)>) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().json(utils::retrieve_course_list_helper(&query_params.into_inner()).await))

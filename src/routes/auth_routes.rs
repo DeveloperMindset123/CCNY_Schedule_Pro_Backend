@@ -193,17 +193,39 @@ pub async fn signin_handler(mut payload : web::Payload) -> Result<HttpResponse, 
     // this is the same as writting the following SQL statement below:
     // SELECT user_password FROM users WHERE email={provided_input_email} 
     // retrieves password based on provided email address
-    let user_password_verification = users.filter(email.eq(login_creds.clone().email)).select(user_password).get_result::<String>(connection);
+    let user_password_verification = users.filter(email.eq(login_creds.clone().email)).select(user_password).get_result::<String>(connection).unwrap();
+    // println!("retrieved password from database : {user_password_verification:?}");
 
     // check if the hashed password matches
-    if calculate_hash(&login_creds.clone().password) != user_password_verification.unwrap() {
+    // TODO : we may not need to use calculate_hash function here as the password has already been hashed on the client side (for security reasons)
+
+    // syntax for how a variable can be cloned via referencing
+    // this is essentially the process of allocating memory for the password
+    let user_password_verification_copy = Clone::clone(&user_password_verification);
+    // println!("User password verification copied variable : {:?}", user_password_verification_copy);
+
+    // This is the old comparison operator
+    // if calculate_hash(&login_creds.clone().password) != user_password_verification.unwrap() {
+
+    let retrieved_password : String = String::from(login_creds.clone().password);
+
+    println!("user credential based password (hashed) : {:?}", retrieved_password.clone());
+    println!("database retrieved password (also hashed) : {:?}", user_password_verification_copy);
+    // NOTE : user_password_verfication needs to be unwrapped
+    // TODO : uncomment this once the cloned version is successful
+    // if (login_creds.clone().password == user_password_verification_copy) {
+    //     println!("The passwords of the users match.");
+    // }
+    
+
+    // NOTE : for some reason, unless I recalculate the hash, the password matching logic fails. (unknown error that is occuring)
+    if calculate_hash(&login_creds.clone().password) != user_password_verification {
         return Ok(HttpResponse::BadRequest().json(
             serde_json::json!({
             "error" : "Incorrect password, please enter the correct password"
             })));
     }
 
-    // TODO : perhaps implement a better success logic, rather than revealing user input
     Ok(HttpResponse::Ok().json(login_creds))
 }
 
