@@ -24,5 +24,6 @@
 
 # GET http://localhost:5000/rmp/summary/douglas 
 # GET http://localhost:5000/rmp/get_professor_list
-# GET http://localhost:5000/ccny/courses/electrical engineering
-GET http://localhost:5000/ccny/courses/psychology/intro"
+GET http://localhost:5000/ccny/courses/electrical engineering
+# GET http://localhost:5000/ccny/courses/psychology/intro"
+# GET http://localhost:5000/ccny/department_lists
